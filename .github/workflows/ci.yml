@@ -1,43 +1,28 @@
-name: CI Pipeline
+name: CI/CD Demo
 
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-
+  build:
+    runs-on: self-hosted   # 👈 uses your EC2
     steps:
-      # 1. Checkout code
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Set up Python (optional, only if you need it to run hello.py)
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          python-version: '3.9'
+          node-version: '18'
 
-      # 3. Run Python app (optional)
-      - name: Run Python app
-        run: python hello.py
+      - name: Install dependencies
+        run: npm install
 
-      # 4. Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Run tests
+        run: npm test
 
-      # 5. Login to Docker Hub
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # 6. Build and push Docker image
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: sanjaypallapu11/hello-devops:latest
+      - name: Deploy (dummy step)
+        run: echo "🚀 Deploying to EC2 done!"
